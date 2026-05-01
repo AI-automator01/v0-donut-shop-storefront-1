@@ -1,0 +1,72 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Candy-coated palette */
+  --background: oklch(0.98 0.012 340);        /* warm blush white */
+  --foreground: oklch(0.22 0.04 330);         /* deep berry */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.04 330);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.04 330);
+
+  /* Primary: hot candy pink */
+  --primary: oklch(0.62 0.22 0);
+  --primary-foreground: oklch(1 0 0);
+
+  /* Secondary: mint green */
+  --secondary: oklch(0.88 0.08 162);
+  --secondary-foreground: oklch(0.25 0.06 162);
+
+  /* Accent: soft yellow */
+  --accent: oklch(0.92 0.1 95);
+  --accent-foreground: oklch(0.3 0.07 80);
+
+  --muted: oklch(0.96 0.01 340);
+  --muted-foreground: oklch(0.52 0.04 330);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.9 0.03 340);
+  --input: oklch(0.9 0.03 340);
+  --ring: oklch(0.62 0.22 0);
+  --radius: 1rem;
+}
+
+@theme inline {
+  --font-sans: var(--font-nunito), 'Nunito', sans-serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
