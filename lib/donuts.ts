@@ -131,7 +131,7 @@ export const CATEGORIES = [
 export const BUNDLE_SIZES = [
   { key: 'small',  label: 'Small Box',  slots: 6,  price: 9.5  },
   { key: 'party',  label: 'Party Box',  slots: 12, price: 18.0 },
-  { key: 'mega',   label: 'Mega Box',   slots: 24, price: 34.0 },
+  { key: 'mega',   label: 'Mega Box',   slots: 24 },
 ] as const
 
 export type BundleKey = typeof BUNDLE_SIZES[number]['key']

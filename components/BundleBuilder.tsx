@@ -24,7 +24,7 @@ export default function BundleBuilder() {
         <div className="text-center mb-10">
           <h2 className="font-black text-4xl text-foreground mb-2">Build your box</h2>
           <p className="text-muted-foreground font-semibold">
-            Choose a size, then pick your flavors from the menu below.
+            Choose a size, then pick your flavors from the menu below. Tap any added donut to remove it.
           </p>
         </div>
 
@@ -45,9 +45,6 @@ export default function BundleBuilder() {
             >
               <span className="text-2xl font-black">{b.slots}</span>
               <span className="text-sm">{b.label}</span>
-              <span className={cn('text-xs', bundleKey === b.key ? 'text-primary-foreground/80' : 'text-muted-foreground')}>
-                ${b.price.toFixed(2)}
-              </span>
             </motion.button>
           ))}
         </div>
@@ -74,29 +71,35 @@ export default function BundleBuilder() {
                 >
                   <AnimatePresence>
                     {slot ? (
-                      <motion.div
+                      <motion.button
                         key={slot.id}
                         initial={{ scale: 0, rotate: -20, opacity: 0 }}
                         animate={{ scale: 1, rotate: 0, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                        className="absolute inset-0"
+                        onClick={() => removeSlot(slot.id)}
+                        aria-label={`Remove ${slot.donut.name}`}
+                        className="absolute inset-0 w-full h-full group text-left focus:outline-none"
                       >
                         <Image
                           src={`/donuts/${slot.donut.id}.jpg`}
                           alt={slot.donut.name}
                           fill
-                          className="object-cover rounded-xl"
+                          className="object-cover rounded-xl transition-transform duration-200 group-hover:scale-95 group-focus:scale-95"
                         />
-                        {/* Remove button */}
-                        <button
-                          onClick={() => removeSlot(slot.id)}
-                          aria-label={`Remove ${slot.donut.name}`}
-                          className="absolute top-0.5 right-0.5 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 hover:opacity-100 focus:opacity-100 transition-opacity"
-                        >
-                          <X size={10} />
-                        </button>
-                      </motion.div>
+                        
+                        {/* Always visible Close/Delete Badge in top right corner */}
+                        <div className="absolute top-1.5 right-1.5 bg-destructive text-destructive-foreground rounded-full p-1 shadow-md transition-transform group-hover:scale-110">
+                          <X size={12} className="stroke-[3]" />
+                        </div>
+
+                        {/* Quick Hover/Focus Overlay text */}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
+                          <span className="text-white font-black text-xs tracking-wider uppercase bg-destructive/90 px-2 py-1 rounded-md">
+                            Remove
+                          </span>
+                        </div>
+                      </motion.button>
                     ) : (
                       <span className="text-muted-foreground/30 text-2xl select-none" aria-hidden="true">+</span>
                     )}

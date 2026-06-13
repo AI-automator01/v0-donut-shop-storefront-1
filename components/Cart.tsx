@@ -33,6 +33,36 @@ export default function Cart() {
 
   const canCheckout = slots.length === totalSlots && pickupTime !== ''
 
+  // ── WHATSAPP CHECKOUT HANDLER ──────────────────────────────────────────────
+  const handleWhatsAppCheckout = () => {
+    if (!canCheckout) return
+
+    // TODO: Replace with the actual business phone number (include country code, digits only)
+    // Example: '15551234567'
+    const phoneNumber = '584120895577' 
+
+    // Format the items list text block using native bullet dashes
+    const itemsList = Object.values(grouped)
+      .map((item) => `- ${item.name} (x${item.count}) - $${(item.price * item.count).toFixed(2)}`)
+      .join('\n')
+
+    // Construct the structured order message template using native WhatsApp markdown asterisks
+    const messageText = `*NEW DONUT ORDER*\n\n` +
+      `*Box Type:* ${bundle.label}\n` +
+      `*Pickup Time:* ${pickupTime}\n\n` +
+      `*Selected Flavors:*\n${itemsList}\n\n` +
+      `*Total Amount:* $${bundlePrice.toFixed(2)}\n\n` +
+      `Please let me know if my order is confirmed! Thank you!`
+
+    // Securely encode the text layout strings for safe URI redirection
+    const encodedMessage = encodeURIComponent(messageText)
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`
+
+    // Open WhatsApp thread in a clean, secure tab window
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
+  }
+  // ───────────────────────────────────────────────────────────────────────────
+
   return (
     <AnimatePresence>
       {cartOpen && (
@@ -144,6 +174,7 @@ export default function Cart() {
                 whileTap={canCheckout ? { scale: 0.96 } : {}}
                 whileHover={canCheckout ? { scale: 1.02 } : {}}
                 disabled={!canCheckout}
+                onClick={handleWhatsAppCheckout} // <-- Added the action logic handler call here
                 className={`w-full font-black py-3.5 rounded-full text-base transition-colors ${
                   canCheckout
                     ? 'bg-primary text-primary-foreground shadow-md hover:brightness-110'
