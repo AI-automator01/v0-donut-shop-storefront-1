@@ -1,9 +1,10 @@
+
 export type Allergen = 'nuts' | 'dairy'
 
 export interface Donut {
   id: string
   name: string
-  category: 'classics' | 'artisans' | 'kids' | 'specialty'
+  category:  'classics' | 'magic' | 'alternative_formats' | 'specialty' 
   description: string
   price: number
   color: string        // tailwind bg class for the icon
@@ -13,102 +14,105 @@ export interface Donut {
 }
 
 export const DONUTS: Donut[] = [
-  // ── Classics ──────────────────────────────────────────────────────────────
+
+
+
+  // ── Classics (Per Unit Pricing) ──────────────────────────────────────────
   {
-    id: 'glazed',
+    id: 'classic-glazed',
     name: 'Classic Glazed',
     category: 'classics',
-    description: 'Our original 5cm ring, hand-dipped in silky vanilla glaze. Simple perfection.',
-    price: 1.5,
+    description: 'Traditional handcrafted glaze over a light mini donut base.',
+    price: 0.20, //
     color: 'bg-yellow-100',
     ringColor: 'ring-yellow-300',
     allergens: ['dairy'],
     emoji: '🍩',
   },
   {
-    id: 'choc-sprinkles',
-    name: 'Chocolate Sprinkles',
+    id: 'condensed-milk',
+    name: 'Condensed Milk',
     category: 'classics',
-    description: 'Rich chocolate ganache topped with a rainbow of sprinkles on a 5cm base.',
-    price: 1.75,
-    color: 'bg-amber-800',
-    ringColor: 'ring-amber-600',
+    description: 'Sweet, rich condensed milk glaze drizzle.',
+    price: 0.20, //
+    color: 'bg-sky-100',
+    ringColor: 'ring-sky-300',
     allergens: ['dairy'],
-    emoji: '🍩',
+    emoji: '🥛',
   },
 
-  // ── Artisans ───────────────────────────────────────────────────────────────
+  // ── Magic / Premium Glazes (Per Unit Pricing) ────────────────────────────────
   {
-    id: 'lemon-lavender',
-    name: 'Lemon Lavender',
-    category: 'artisans',
-    description: 'Zesty lemon curd glaze kissed with dried lavender on a fluffy 5cm ring.',
-    price: 2.25,
-    color: 'bg-purple-200',
-    ringColor: 'ring-purple-300',
+    id: 'dulce-de-leche',
+    name: 'Dulce de Leche (Arequipe)',
+    category: 'magic',
+    description: 'Traditional smooth and creamy dulce de leche covering.',
+    price: 0.25, //
+    color: 'bg-amber-200',
+    ringColor: 'ring-amber-400',
     allergens: ['dairy'],
-    emoji: '💜',
+    emoji: '🍯',
   },
   {
-    id: 'maple-bacon',
-    name: 'Maple Bacon',
-    category: 'artisans',
-    description: 'Vermont maple glaze crowned with candied bacon crumbles. Our 5cm showstopper.',
-    price: 2.5,
-    color: 'bg-orange-300',
+    id: 'colored-glaze',
+    name: 'Colored Glaze',
+    category: 'magic',
+    description: 'Vibrant, beautifully colored custom decorative frosting coat.',
+    price: 0.25, //
+    color: 'bg-fuchsia-200',
+    ringColor: 'ring-fuchsia-400',
+    allergens: ['dairy'],
+    emoji: '🎨',
+  },
+  {
+    id: 'chocolate',
+    name: 'Chocolate',
+    category: 'magic',
+    description: 'Deep chocolate luxury glaze couverture.',
+    price: 0.25, //
+    color: 'bg-amber-900',
+    ringColor: 'ring-amber-700',
+    allergens: ['dairy'],
+    emoji: '🍫',
+  },
+
+  // ── Alternative Individual Formats ─────────────────────────────────────────
+  {
+    id: 'donissima-temptation',
+    name: 'Doníssima Temptation (Cup Format)',
+    category: 'alternative_formats',
+    description: '6 mini donuts bundled in a cup with custom coating and topping selection.',
+    price: 1.50, //
+    color: 'bg-rose-200',
+    ringColor: 'ring-rose-400',
+    allergens: ['dairy'],
+    emoji: '🥤',
+  },
+  {
+    id: 'tri-donissima',
+    name: 'Tri-Doníssima (On a Stick / Skewer)',
+    category: 'alternative_formats',
+    description: '3 delicious mini donuts skewered on a stick with custom toppings.',
+    price: 1.00, //
+    color: 'bg-orange-200',
     ringColor: 'ring-orange-400',
-    allergens: [],
-    emoji: '🥓',
+    allergens: ['dairy'],
+    emoji: '🍡',
   },
   {
-    id: 'matcha-bliss',
-    name: 'Matcha Bliss',
-    category: 'artisans',
-    description: 'Stone-ground ceremonial matcha glaze with white sesame. Dairy-free 5cm bliss.',
-    price: 2.25,
-    color: 'bg-green-300',
-    ringColor: 'ring-green-400',
-    allergens: [],
-    emoji: '🍵',
+    id: 'deli-donissima',
+    name: 'Deli-Doníssima (Container Format)',
+    category: 'alternative_formats',
+    description: '8 mini donuts safely packaged inside a specialized catering pack with glaze and toppings.',
+    price: 2.00, //
+    color: 'bg-teal-200',
+    ringColor: 'ring-teal-400',
+    allergens: ['dairy'],
+    emoji: '🍱',
   },
 
-  // ── Kids' Zone ────────────────────────────────────────────────────────────
+    // ── Specialty ────────────────────────────────────────────────────────────
   {
-    id: 'galaxy-swirl',
-    name: 'Galaxy Swirl',
-    category: 'kids',
-    description: 'Cosmic blue-purple frosting with edible silver stars on a 5cm wonder.',
-    price: 2.0,
-    color: 'bg-indigo-400',
-    ringColor: 'ring-indigo-500',
-    allergens: ['dairy'],
-    emoji: '🌌',
-  },
-  {
-    id: 'cookie-monster',
-    name: 'Cookie Monster',
-    category: 'kids',
-    description: 'Electric blue frosting loaded with cookie crumbs. 5cm of pure joy.',
-    price: 2.0,
-    color: 'bg-blue-400',
-    ringColor: 'ring-blue-500',
-    allergens: ['dairy'],
-    emoji: '🍪',
-  },
-  {
-    id: 'cotton-candy',
-    name: 'Cotton Candy',
-    category: 'kids',
-    description: 'Fluffy pink-and-blue swirl frosting that tastes like the fairground — 5cm fun.',
-    price: 2.0,
-    color: 'bg-pink-300',
-    ringColor: 'ring-pink-400',
-    allergens: ['dairy'],
-    emoji: '🎀',
-  },
-
-  // ── Specialty ────────────────────────────────────────────────────────────
-    {
     id: 'tower-of-the-moment',
     name: 'The Tower of the Moment',
     category: 'specialty',
@@ -119,26 +123,57 @@ export const DONUTS: Donut[] = [
     allergens: ['dairy'],
     emoji: '🌌',
   },
+
+]
+
+export const TOPPINGS = [
+  { id: 'sprinkles-colored', name: 'Rainbow Sprinkles' },
+  { id: 'sprinkles-chocolate', name: 'Chocolate Sprinkles' }
+]
+
+export const TOPPERS = [
+  { id: 'topper-simple', name: 'Simple Topper', price: 1.50 }, //
+  { id: 'topper-custom', name: 'Custom Topper', price: 3.00 }, //
+  { id: 'topper-vip', name: 'VIP Custom Topper', price: 5.00 } //
 ]
 
 export const CATEGORIES = [
-  { key: 'classics', label: 'The Classics' },
-  { key: 'artisans', label: 'The Artisans' },
-  { key: 'kids',     label: "The Kids' Zone" },
-  { key: 'specialty',   label: "Specialty Designs" },
+
+
+  { key: 'classics', label: 'Classics Base (Minis)' },
+  { key: 'magic', label: 'Magic Base (Minis)' },
+  { key: 'alternative_formats', label: 'Individual Formats' },
+  { key: 'specialty', label: 'Specialty Designs' }
 ] as const
 
+// Expanded bundle sizes mapping the Doníssima Classic & Magic systems natively
 export const BUNDLE_SIZES = [
-  { key: 'small',  label: 'Small Box',  slots: 6,  price: 9.5  },
-  { key: 'party',  label: 'Party Box',  slots: 12, price: 18.0 },
-  { key: 'mega',   label: 'Mega Box',   slots: 24 },
+  { key: 'small', label: 'Small Box', slots: 6 },
+  { key: 'party', label: 'Party Box', slots: 12 },
+  { key: 'mega', label: 'Mega Box', slots: 24 },
+  
+  // Custom Production Matrices (Handwritten Specs)
+  { key: 'classic-24', label: 'Doníssima Classic (24 Minis)', slots: 24, price: 10.00 }, //
+  { key: 'classic-48', label: 'Doníssima Classic Tower (48 Minis)', slots: 48, price: 20.00 }, //
+  { key: 'classic-60', label: 'Doníssima Classic Tower (60 Minis)', slots: 60, price: 30.00 }, //
+  
+  { key: 'magic-24', label: 'Doníssima Magic (24 Minis)', slots: 24, price: 15.00 }, //
+  { key: 'magic-48', label: 'Doníssima Magic Tower (48 Minis)', slots: 48, price: 30.00 }, //
+  { key: 'magic-60', label: 'Doníssima Magic Tower (60 Minis)', slots: 60, price: 45.00 } //
 ] as const
 
 export type BundleKey = typeof BUNDLE_SIZES[number]['key']
 
 export const PICKUP_TIMES = [
   '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
-  '12:00 PM', '12:30 PM',  '1:00 PM',  '1:30 PM',
-   '2:00 PM',  '2:30 PM',  '3:00 PM',  '3:30 PM',
-   '4:00 PM',  '4:30 PM',  '5:00 PM',
+  '12:00 PM', '12:30 PM', '1:00 PM', '1:30 PM',
+  '2:00 PM', '2:30 PM', '3:00 PM', '3:30 PM',
+  '4:00 PM', '4:30 PM', '5:00 PM'
 ]
+
+// Policy Constants for business validation checks
+export const ORDER_POLICY = {
+  advanceDaysRequired: 3, //
+  downPaymentPercentage: 50, //
+  noticeText: 'Orders must be placed with at least 3 days advance notice. A 50% down payment is required to confirm your order slot.' //
+}

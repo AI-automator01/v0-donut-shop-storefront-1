@@ -1,10 +1,11 @@
 'use client'
 
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
-import { X, Clock } from 'lucide-react'
+import { X, Clock, Calendar, AlertTriangle } from 'lucide-react'
 import { useStore } from '@/lib/store'
-import { PICKUP_TIMES, BUNDLE_SIZES } from '@/lib/donuts'
+import { PICKUP_TIMES, BUNDLE_SIZES, ORDER_POLICY } from '@/lib/donuts'
 
 export default function Cart() {
   const {
@@ -19,6 +20,9 @@ export default function Cart() {
     setPickupTime,
   } = useStore()
 
+  // Local state for tracking the chosen delivery/pickup date
+  const [pickupDate, setPickupDate] = useState<string>('')
+
   const bundle = BUNDLE_SIZES.find((b) => b.key === bundleKey)!
 
   // Group slots by donut
@@ -31,14 +35,33 @@ export default function Cart() {
     return acc
   }, {})
 
-  const canCheckout = slots.length === totalSlots && pickupTime !== ''
+  // Calculate the earliest valid date based on the 3-day notice policy
+  const getMinDateString = (): string => {
+    const minDate = new Date()
+    minDate.setDate(minDate.getDate() + ORDER_POLICY.advanceDaysRequired)
+    return minDate.toISOString().split('T')[0]
+  }
+
+  // Check if chosen date satisfies business rules
+  const isDateValid = (): boolean => {
+    if (!pickupDate) return false
+    const selected = new Date(pickupDate + 'T00:00:00')
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
+    // Calculate the difference in milliseconds and convert to entire days
+    const diffTime = selected.getTime() - today.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    
+    return diffDays >= ORDER_POLICY.advanceDaysRequired
+  }
+
+  const canCheckout = slots.length === totalSlots && pickupTime !== '' && isDateValid()
 
   // ── WHATSAPP CHECKOUT HANDLER ──────────────────────────────────────────────
   const handleWhatsAppCheckout = () => {
     if (!canCheckout) return
 
-    // TODO: Replace with the actual business phone number (include country code, digits only)
-    // Example: '15551234567'
     const phoneNumber = '584120895577' 
 
     // Format the items list text block using native bullet dashes
@@ -49,9 +72,11 @@ export default function Cart() {
     // Construct the structured order message template using native WhatsApp markdown asterisks
     const messageText = `*NEW DONUT ORDER*\n\n` +
       `*Box Type:* ${bundle.label}\n` +
+      `*Pickup Date:* ${pickupDate}\n` +
       `*Pickup Time:* ${pickupTime}\n\n` +
       `*Selected Flavors:*\n${itemsList}\n\n` +
       `*Total Amount:* $${bundlePrice.toFixed(2)}\n\n` +
+      `*Notice:* I understand that a 50% down payment is required to confirm.\n\n` +
       `Please let me know if my order is confirmed! Thank you!`
 
     // Securely encode the text layout strings for safe URI redirection
@@ -114,8 +139,16 @@ export default function Cart() {
               </div>
             </div>
 
-            {/* Items */}
-            <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-3">
+            {/* Order Terms Policy Notice Alert Box */}
+            <div className="mx-5 mt-4 p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-xl flex gap-2.5 items-start">
+              <AlertTriangle size={18} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <p className="text-amber-800 dark:text-amber-300 font-medium text-xs leading-relaxed">
+                {ORDER_POLICY.noticeText}
+              </p>
+            </div>
+
+            {/* Items Container */}
+            <div className="flex-1 overflow-y-auto px-5 py-2 flex flex-col gap-3">
               {slots.length === 0 ? (
                 <p className="text-center text-muted-foreground font-semibold py-10">
                   Your box is empty — add donuts from the menu!
@@ -145,27 +178,46 @@ export default function Cart() {
               )}
             </div>
 
-            {/* Pickup Time */}
-            <div className="px-5 py-4 border-t border-border">
-              <label htmlFor="pickup-select" className="flex items-center gap-2 font-bold text-foreground text-sm mb-2">
-                <Clock size={16} className="text-primary" />
-                Pickup Time
-              </label>
-              <select
-                id="pickup-select"
-                value={pickupTime}
-                onChange={(e) => setPickupTime(e.target.value)}
-                className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 font-semibold text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                <option value="">Select a time...</option>
-                {PICKUP_TIMES.map((t) => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
+            {/* Logistics Pickers (Date & Time) */}
+            <div className="px-5 py-4 border-t border-border flex flex-col gap-4 bg-muted/30">
+              {/* Date Input Field */}
+              <div>
+                <label htmlFor="pickup-date" className="flex items-center gap-2 font-bold text-foreground text-sm mb-2">
+                  <Calendar size={16} className="text-primary" />
+                  Pickup Date
+                </label>
+                <input
+                  id="pickup-date"
+                  type="date"
+                  min={getMinDateString()}
+                  value={pickupDate}
+                  onChange={(e) => setPickupDate(e.target.value)}
+                  className="w-full bg-card border border-border rounded-xl px-4 py-2.5 font-semibold text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring scheme-light dark:scheme-dark"
+                />
+              </div>
+
+              {/* Time Input Field */}
+              <div>
+                <label htmlFor="pickup-select" className="flex items-center gap-2 font-bold text-foreground text-sm mb-2">
+                  <Clock size={16} className="text-primary" />
+                  Pickup Time
+                </label>
+                <select
+                  id="pickup-select"
+                  value={pickupTime}
+                  onChange={(e) => setPickupTime(e.target.value)}
+                  className="w-full bg-card border border-border rounded-xl px-4 py-2.5 font-semibold text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                  <option value="">Select a time...</option>
+                  {PICKUP_TIMES.map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Footer */}
-            <div className="px-5 py-5 border-t border-border">
+            <div className="px-5 py-5 border-t border-border bg-card">
               <div className="flex items-center justify-between mb-4">
                 <span className="font-bold text-foreground">Box total</span>
                 <span className="font-black text-primary text-xl">${bundlePrice.toFixed(2)}</span>
@@ -174,7 +226,7 @@ export default function Cart() {
                 whileTap={canCheckout ? { scale: 0.96 } : {}}
                 whileHover={canCheckout ? { scale: 1.02 } : {}}
                 disabled={!canCheckout}
-                onClick={handleWhatsAppCheckout} // <-- Added the action logic handler call here
+                onClick={handleWhatsAppCheckout}
                 className={`w-full font-black py-3.5 rounded-full text-base transition-colors ${
                   canCheckout
                     ? 'bg-primary text-primary-foreground shadow-md hover:brightness-110'
@@ -183,6 +235,10 @@ export default function Cart() {
               >
                 {slots.length < totalSlots
                   ? `Add ${totalSlots - slots.length} more donut${totalSlots - slots.length !== 1 ? 's' : ''}`
+                  : !pickupDate
+                  ? 'Choose a pickup date'
+                  : !isDateValid()
+                  ? 'Requires 3 days notice'
                   : !pickupTime
                   ? 'Select a pickup time'
                   : 'Place order'}
