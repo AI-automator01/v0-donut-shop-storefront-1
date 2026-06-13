@@ -19,7 +19,7 @@ export default function Hero() {
           </p>
           <h1 className="font-black text-5xl md:text-6xl leading-tight text-balance text-foreground mb-4">
             Mini donuts,{' '}
-            <span className="text-primary">mega ..joy.</span>
+            <span className="text-primary">mega joy.</span>
           </h1>
           <p className="text-muted-foreground font-semibold text-lg leading-relaxed max-w-md mx-auto md:mx-0 text-pretty">
             Every single donut is exactly{' '}

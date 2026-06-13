@@ -3,7 +3,7 @@ export type Allergen = 'nuts' | 'dairy'
 export interface Donut {
   id: string
   name: string
-  category: 'classics' | 'artisans' | 'kids'
+  category: 'classics' | 'artisans' | 'kids' | 'specialty'
   description: string
   price: number
   color: string        // tailwind bg class for the icon
@@ -106,12 +106,26 @@ export const DONUTS: Donut[] = [
     allergens: ['dairy'],
     emoji: '🎀',
   },
+
+  // ── Specialty ────────────────────────────────────────────────────────────
+    {
+    id: 'tower-of-the-moment',
+    name: 'The Tower of the Moment',
+    category: 'specialty',
+    description: 'Mini doughnuts stacked like a sweet work of art, designed to celebrate important moments without words. Birthdays, Anniversaries, Achievements, Romantic Surprises, Baby Showers and much more.',
+    price: 200.0,
+    color: 'bg-indigo-400',
+    ringColor: 'ring-indigo-500',
+    allergens: ['dairy'],
+    emoji: '🌌',
+  },
 ]
 
 export const CATEGORIES = [
   { key: 'classics', label: 'The Classics' },
   { key: 'artisans', label: 'The Artisans' },
   { key: 'kids',     label: "The Kids' Zone" },
+  { key: 'specialty',   label: "Specialty Designs" },
 ] as const
 
 export const BUNDLE_SIZES = [
