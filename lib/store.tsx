@@ -44,6 +44,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const bundle = BUNDLE_SIZES.find((b) => b.key === bundleKey)!
 
+  // ── DYNAMIC PRICE CALCULATION ─────────────────────────────────────────────
+  // This loops through every item inside the box and totals up their prices
+  const dynamicBundlePrice = slots.reduce((total, slot) => total + slot.donut.price, 0)
+
+  /* NOTE: If you still want a flat base price for the box container PLUS the 
+    donut costs, change the calculation to:
+    const dynamicBundlePrice = bundle.price + slots.reduce((total, slot) => total + slot.donut.price, 0)
+  */
+  // ───────────────────────────────────────────────────────────────────────────
+
   const setBundleKey = useCallback((k: BundleKey) => {
     setBundleKeyState(k)
     setSlots([])
@@ -80,7 +90,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setCartOpen,
         setPickupTime,
         totalSlots: bundle.slots,
-        bundlePrice: bundle.price,
+        bundlePrice: dynamicBundlePrice, // <-- Updated to pass the dynamic calculation
       }}
     >
       {children}
