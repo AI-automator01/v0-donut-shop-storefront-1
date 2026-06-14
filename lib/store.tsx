@@ -10,7 +10,7 @@ import {
 import { BUNDLE_SIZES, TOPPERS, type BundleKey, type Donut } from './donuts'
 
 export interface BoxSlot {
-  id: string       // unique per slot instance
+  id: string       
   donut: Donut
 }
 
@@ -21,8 +21,8 @@ interface StoreState {
   hideDairy: boolean
   cartOpen: boolean
   pickupTime: string
-  selectedToppings: string[] // Array of selected topping IDs
-  selectedTopperId: string   // ID of selected premium topper
+  selectedToppings: string[] 
+  selectedTopperId: string   
   setBundleKey: (k: BundleKey) => void
   addDonut: (donut: Donut) => void
   removeSlot: (id: string) => void
@@ -45,25 +45,23 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [hideDairy, setHideDairy] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
   const [pickupTime, setPickupTime] = useState('')
-  
-  // Custom Customization Add-On States
   const [selectedToppings, setSelectedToppings] = useState<string[]>([])
   const [selectedTopperId, setSelectedTopperId] = useState<string>('')
 
   const bundle = BUNDLE_SIZES.find((b) => b.key === bundleKey)!
 
-  // ── DYNAMIC SYSTEM PRICE CALCULATION ──────────────────────────────────────
+  // ── HYBRID PRICING CALCULATOR MATRIX ──────────────────────────────────────
   let calculatedPrice = 0
 
   if ('price' in bundle && typeof bundle.price === 'number') {
-    // For Doníssima Classic / Magic tiers, use the structural matrix flat pricing
+    // Hardcoded production flat matrix mapping for Doníssima Classic / Magic lines
     calculatedPrice = bundle.price
   } else {
-    // Fallback default calculation: total of each added element's native price value
+    // Dynamic fallback accumulative item addition for Standard 6, 12, 24 configurations
     calculatedPrice = slots.reduce((total, slot) => total + slot.donut.price, 0)
   }
 
-  // Inject any premium topper selection price into the final box layout total
+  // Inject chosen standalone decoration accessories cleanly to the total layout bounds
   const activeTopper = TOPPERS.find(t => t.id === selectedTopperId)
   if (activeTopper) {
     calculatedPrice += activeTopper.price
@@ -73,7 +71,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const setBundleKey = useCallback((k: BundleKey) => {
     setBundleKeyState(k)
     setSlots([])
-    setSelectedToppings([]) // Reset customizations when size swaps
+    setSelectedToppings([]) 
     setSelectedTopperId('')
   }, [])
 
@@ -98,7 +96,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const setTopperId = useCallback((id: string) => {
-    setSelectedTopperId((prev) => (prev === id ? '' : id)) // Click again to remove toggle
+    setSelectedTopperId((prev) => (prev === id ? '' : id)) 
   }, [])
 
   return (
