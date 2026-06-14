@@ -9,7 +9,7 @@ const nunito = Nunito({
 })
 
 export const metadata: Metadata = {
-  title: 'Donitas De Marien — Made-to-Order, 5cm Perfection',
+  title: 'Doníssima — Made-to-Order, 5cm Perfection',
   description:
     'Build your own custom donut box from Dotty\'s Mini Donuts. Every donut is exactly 5cm, made fresh to order. Choose your flavors, build your box, pick your time.',
   generator: 'v0.app',

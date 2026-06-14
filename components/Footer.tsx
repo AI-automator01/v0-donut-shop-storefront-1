@@ -5,7 +5,7 @@ export default function Footer() {
         <p>
           <span className="text-primary font-black">Doníssima</span> — Every donut exactly 5cm. Made with love, made to order.
         </p>
-        <p>&copy; {new Date().getFullYear()} Dotty&apos;s Mini Donuts. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Doníssima Mini Donuts. All rights reserved.</p>
       </div>
     </footer>
   )

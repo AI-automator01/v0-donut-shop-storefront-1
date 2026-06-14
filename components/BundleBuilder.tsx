@@ -1,8 +1,6 @@
 'use client'
 
-import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Image from 'next/image'
 import { X } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { BUNDLE_SIZES } from '@/lib/donuts'
@@ -14,32 +12,12 @@ function gridCols(n: number) {
   return 'grid-cols-6 md:grid-cols-8 lg:grid-cols-12'
 }
 
-// Color hex mappings corresponding to the donut's color category property
-const COLOR_MAP: Record<string, { bg: string; border: string }> = {
-  'bg-yellow-100': { bg: '#fef9c3', border: '#fde047' },
-  'bg-sky-100':    { bg: '#e0f2fe', border: '#7dd3fc' },
-  'bg-amber-200':  { bg: '#fde68a', border: '#fbbf24' },
-  'bg-fuchsia-200':{ bg: '#fae8ff', border: '#f472b6' },
-  'bg-amber-900':  { bg: '#451a03', border: '#78350f' },
-  'bg-rose-200':   { bg: '#ffe4e6', border: '#fda4af' },
-  'bg-orange-200': { bg: '#ffedd5', border: '#fdba74' },
-  'bg-teal-200':   { bg: '#ccfbf1', border: '#5eead4' },
-  'bg-indigo-400': { bg: '#818cf8', border: '#6366f1' },
-}
-
 export default function BundleBuilder() {
   const { bundleKey, setBundleKey, slots, removeSlot, totalSlots, bundlePrice } = useStore()
-  
-  // Track image loading error fallbacks individually by slot ID key strings
-  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
 
   const standardBoxes = BUNDLE_SIZES.filter(b => ['small', 'party', 'mega1'].includes(b.key))
   const classicTowers = BUNDLE_SIZES.filter(b => b.key.startsWith('classic-'))
   const magicTowers = BUNDLE_SIZES.filter(b => b.key.startsWith('magic-'))
-
-  const handleImageError = (slotId: string) => {
-    setImageErrors((prev) => ({ ...prev, [slotId]: true }))
-  }
 
   const renderRow = (title: string, bundles: typeof BUNDLE_SIZES) => {
     return (
@@ -92,14 +70,14 @@ export default function BundleBuilder() {
           </p>
         </div>
 
-        {/* Rows Layout */}
+        {/* Dynamic Structural Grid Rows Layout */}
         <div className="bg-muted/30 border-2 border-border/70 rounded-3xl p-5 md:p-6 flex flex-col gap-5 mb-12 shadow-sm">
           {renderRow("Standard Boxes", standardBoxes)}
           {renderRow("Doníssima Classic", classicTowers)}
           {renderRow("Doníssima Magic", magicTowers)}
         </div>
 
-        {/* Visual Box Container Wrapper */}
+        {/* Visual Matrix Container Box Wrapper */}
         <div className="bg-card rounded-3xl border-2 border-border p-6 shadow-inner">
           <div className="flex items-center justify-between mb-4">
             <p className="font-bold text-foreground text-lg">
@@ -114,20 +92,13 @@ export default function BundleBuilder() {
           <div className={cn('grid gap-3', gridCols(totalSlots))}>
             {Array.from({ length: totalSlots }).map((_, i) => {
               const slot = slots[i]
-              const donutData = slot?.donut ? slot.donut : null
-              const colorConfig = donutData ? (COLOR_MAP[donutData.color] || { bg: '#fef9c3', border: '#fde047' }) : null
-              
-              // Dynamic image source asset configuration matching the item ID structure
-              const imageSrc = donutData ? `/donuts/${donutData.id}.jpg` : null
-              const hasError = slot ? !!imageErrors[slot.id] : false
-
               return (
                 <div
                   key={i}
                   className="aspect-square rounded-xl border-2 border-dashed border-border bg-muted/50 flex items-center justify-center overflow-hidden relative"
                 >
                   <AnimatePresence mode="wait">
-                    {slot && donutData ? (
+                    {slot ? (
                       <motion.button
                         key={slot.id}
                         initial={{ scale: 0, rotate: -20, opacity: 0 }}
@@ -135,42 +106,26 @@ export default function BundleBuilder() {
                         exit={{ scale: 0, opacity: 0 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 20 }}
                         onClick={() => removeSlot(slot.id)}
+                        aria-label={`Remove ${slot.donut.name}`}
                         className="absolute inset-0 w-full h-full group text-left focus:outline-none"
                       >
-                        {/* Colored card slot content backing */}
-                        <div 
-                          style={{
-                            backgroundColor: colorConfig?.bg,
-                            borderColor: colorConfig?.border
-                          }}
-                          className="absolute inset-0 rounded-xl transition-transform duration-200 group-hover:scale-95 flex flex-col items-center justify-center shadow-inner border p-2"
-                        >
-                          {imageSrc && !hasError ? (
-                            <div className="relative w-full h-full transform transition-transform group-hover:scale-110">
-                              <Image
-                                src={imageSrc}
-                                alt={donutData.name}
-                                fill
-                                sizes="(max-width: 768px) 33vw, 10vw"
-                                className="object-contain"
-                                onError={() => handleImageError(slot.id)}
-                                priority
-                              />
-                            </div>
-                          ) : (
-                            /* High-fidelity text emoji fallback structure if your PNG asset directory link drops */
-                            <span className="text-3xl drop-shadow-sm select-none transform transition-transform group-hover:scale-110 block">
-                              {donutData.emoji}
-                            </span>
-                          )}
+                        {/* Render background color color ring and donut emoji layout view */}
+                        <div className={cn(
+                          'absolute inset-0 rounded-xl transition-transform duration-200 group-hover:scale-95 flex flex-col items-center justify-center shadow-inner border border-black/5',
+                          slot.donut.color
+                        )}>
+                          {/* High-visibility centralized emoji placement matrix wrapper */}
+                          <span className="text-3xl md:text-4xl drop-shadow-sm select-none transform transition-transform group-hover:scale-110">
+                            {slot.donut.emoji}
+                          </span>
                         </div>
 
-                        {/* Always visible Delete X badge icon */}
+                        {/* Always visible Close/Delete Badge in top right corner */}
                         <div className="absolute top-1.5 right-1.5 bg-destructive text-destructive-foreground rounded-full p-1 shadow-md transition-transform group-hover:scale-110 z-10">
                           <X size={12} className="stroke-[3]" />
                         </div>
 
-                        {/* Quick Hover/Focus Remove banner overlay tag */}
+                        {/* Quick Hover/Focus Overlay text */}
                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity flex items-center justify-center rounded-xl z-10">
                           <span className="text-white font-black text-[10px] tracking-wider uppercase bg-destructive/95 px-2 py-1 rounded-md shadow-sm">
                             Remove

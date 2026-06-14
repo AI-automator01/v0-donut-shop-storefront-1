@@ -76,17 +76,6 @@ export const DONUTS: Donut[] = [
 
   // ── Alternative Individual Formats ──
   {
-    id: 'donissima-temptation',
-    name: 'Doníssima Temptation (Cup Format)',
-    category: 'alternative_formats',
-    description: '6 mini donuts bundled in a cup with custom coating and topping selection.',
-    price: 1.50,
-    color: 'bg-rose-200',
-    ringColor: 'ring-rose-400',
-    allergens: ['dairy'],
-    emoji: '🥤',
-  },
-  {
     id: 'tri-donissima',
     name: 'Tri-Doníssima (On a Stick / Skewer)',
     category: 'alternative_formats',
@@ -96,6 +85,17 @@ export const DONUTS: Donut[] = [
     ringColor: 'ring-orange-400',
     allergens: ['dairy'],
     emoji: '🍡',
+  },
+  {
+    id: 'donissima-temptation',
+    name: 'Doníssima Temptation (Cup Format)',
+    category: 'alternative_formats',
+    description: '6 mini donuts bundled in a cup with custom coating and topping selection.',
+    price: 1.50,
+    color: 'bg-rose-200',
+    ringColor: 'ring-rose-400',
+    allergens: ['dairy'],
+    emoji: '🥤',
   },
   {
     id: 'deli-donissima',
@@ -111,8 +111,30 @@ export const DONUTS: Donut[] = [
 
   // ── Specialty ──
   {
-    id: 'tower-of-the-moment',
-    name: 'The Tower of the Moment',
+    id: 'birthday',
+    name: 'Birthday',
+    category: 'specialty',
+    description: 'Mini doughnuts stacked like a sweet work of art.',
+    price: 200.0,
+    color: 'bg-indigo-400',
+    ringColor: 'ring-indigo-500',
+    allergens: ['dairy'],
+    emoji: '🌌',
+  },
+  {
+    id: 'wedding',
+    name: 'Wedding',
+    category: 'specialty',
+    description: 'Mini doughnuts stacked like a sweet work of art.',
+    price: 200.0,
+    color: 'bg-indigo-400',
+    ringColor: 'ring-indigo-500',
+    allergens: ['dairy'],
+    emoji: '🌌',
+  },
+  {
+    id: 'graduation',
+    name: 'Graduation',
     category: 'specialty',
     description: 'Mini doughnuts stacked like a sweet work of art.',
     price: 200.0,
@@ -147,10 +169,14 @@ export const BUNDLE_SIZES = [
   { key: 'party', label: 'Party Box', slots: 12 },
   { key: 'mega1', label: 'Mega Box', slots: 24 },
   
+  { key: 'classic-6', label: 'Doníssima Classic (6 Minis)', slots: 6, price: 2.50 },
+  { key: 'classic-12', label: 'Doníssima Classic (12 Minis)', slots: 12, price: 5.00 },
   { key: 'classic-24', label: 'Doníssima Classic (24 Minis)', slots: 24, price: 10.00 },
   { key: 'classic-48', label: 'Doníssima Classic Tower (48 Minis)', slots: 48, price: 20.00 },
   { key: 'classic-60', label: 'Doníssima Classic Tower (60 Minis)', slots: 60, price: 30.00 },
   
+  { key: 'magic-6', label: 'Doníssima Magic (6 Minis)', slots: 6, price: 3.75 },
+  { key: 'magic-12', label: 'Doníssima Magic (12 Minis)', slots: 12, price: 7.50 },
   { key: 'magic-24', label: 'Doníssima Magic (24 Minis)', slots: 24, price: 15.00 },
   { key: 'magic-48', label: 'Doníssima Magic Tower (48 Minis)', slots: 48, price: 30.00 },
   { key: 'magic-60', label: 'Doníssima Magic Tower (60 Minis)', slots: 60, price: 45.00 }
