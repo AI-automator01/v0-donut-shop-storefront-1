@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState } from 'react'
@@ -9,11 +8,11 @@ import { PICKUP_TIMES, BUNDLE_SIZES, ORDER_POLICY, TOPPINGS, TOPPERS } from '@/l
 
 // Hard-coded sprinkles pricing tier matching the box sizes
 function getSprinklesCost(donutCount: number): number {
-  if (donutCount <= 6)   return 0.50 // Small Box topping add-on
-  if (donutCount <= 12)  return 1.00 // Party Box topping add-on
-  if (donutCount <= 24)  return 2.00 // Mega / 24 Minis Box topping add-on
-  if (donutCount <= 48)  return 3.50 // 48 Minis Tower topping add-on
-  return 4.50                        // 60 Minis Tower or larger topping add-on
+  if (donutCount <= 6)   return 0.50 
+  if (donutCount <= 12)  return 1.00 
+  if (donutCount <= 24)  return 2.00 
+  if (donutCount <= 48)  return 3.50 
+  return 4.50                        
 }
 
 export default function Cart() {
@@ -27,7 +26,7 @@ export default function Cart() {
     bundlePrice,
     pickupTime,
     setPickupTime,
-    selectedToppings,
+    selectedToppings, 
     selectedTopperId,
     toggleTopping,
     setTopperId,
@@ -67,10 +66,31 @@ export default function Cart() {
   const activeTopper = TOPPERS.find(t => t.id === selectedTopperId)
   const topperPrice = activeTopper ? activeTopper.price : 0
   
-  // Total Accumulator combining base package price with extra selections
+  // Combined Grand Total
   const finalCalculatedTotal = bundlePrice + dynamicSprinklePrice + topperPrice
 
   const canCheckout = slots.length === totalSlots && pickupTime !== '' && isDateValid()
+
+  // Enforces Mutually Exclusive Topping Rule
+  const handleToppingSelection = (toppingId: string) => {
+    const isCurrentlySelected = selectedToppings.includes(toppingId)
+
+    if (isCurrentlySelected) {
+      toggleTopping(toppingId)
+    } else {
+      selectedToppings.forEach((id) => {
+        toggleTopping(id)
+      })
+      toggleTopping(toppingId)
+    }
+  }
+
+  // Explicit global removal function for toppings
+  const clearAllToppings = () => {
+    selectedToppings.forEach((id) => {
+      toggleTopping(id)
+    })
+  }
 
   const handleWhatsAppCheckout = () => {
     if (!canCheckout) return
@@ -135,7 +155,7 @@ export default function Cart() {
               </button>
             </div>
 
-            {/* Summary Progress bar display block */}
+            {/* Progress Bar Info */}
             <div className="px-5 py-3 bg-secondary/50 border-b border-border">
               <p className="font-bold text-secondary-foreground text-sm">
                 {bundle.label} — {slots.length}/{totalSlots} selected
@@ -148,7 +168,7 @@ export default function Cart() {
               </div>
             </div>
 
-            {/* Policy Alert Notice Banner */}
+            {/* Advance Notice Alert */}
             <div className="mx-5 mt-4 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-xl flex gap-2 items-start">
               <AlertTriangle size={16} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
               <p className="text-amber-800 dark:text-amber-300 font-medium text-xs leading-tight">
@@ -156,10 +176,10 @@ export default function Cart() {
               </p>
             </div>
 
-            {/* Main content viewport space */}
+            {/* Scrollable Main Section */}
             <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-6">
               
-              {/* Added Items Flavors list */}
+              {/* Flavor Summary List */}
               <div>
                 <h3 className="font-black text-xs uppercase tracking-wider text-muted-foreground mb-2">Flavors Summary</h3>
                 {slots.length === 0 ? (
@@ -186,15 +206,24 @@ export default function Cart() {
                 )}
               </div>
 
-              {/* ── VISUAL SPRINKLES ADD-ON SELECTOR ELEMENT TRAY ── */}
+              {/* ── TOPPING SELECTION TRAY WITH REMOVE ACTION ── */}
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="flex items-center gap-1.5 font-black text-xs uppercase tracking-wider text-muted-foreground">
-                    <Sparkles size={14} className="text-primary" /> Select Box Toppings
+                    <Sparkles size={14} className="text-primary" /> Select Box Toppings (Max 1)
                   </h3>
-                  <span className="text-[10px] font-black text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
-                    +${getSprinklesCost(totalSlots).toFixed(2)} total
-                  </span>
+                  {selectedToppings.length > 0 ? (
+                    <button 
+                      onClick={clearAllToppings}
+                      className="text-[10px] font-black text-destructive hover:underline bg-destructive/10 px-2 py-0.5 rounded-md transition-all"
+                    >
+                      Remove Topping
+                    </button>
+                  ) : (
+                    <span className="text-[10px] font-black text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+                      +${getSprinklesCost(totalSlots).toFixed(2)} total
+                    </span>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   {TOPPINGS.map((topping) => {
@@ -202,8 +231,8 @@ export default function Cart() {
                     return (
                       <button
                         key={topping.id}
-                        onClick={() => toggleTopping(topping.id)}
-                        className={`p-3 rounded-xl border-2 text-left transition-all ${
+                        onClick={() => handleToppingSelection(topping.id)}
+                        className={`p-3 rounded-xl border-2 text-left relative overflow-hidden transition-all ${
                           isSelected
                             ? 'border-primary bg-primary/10 text-foreground font-bold shadow-sm'
                             : 'border-border bg-card text-muted-foreground font-semibold hover:border-primary/30'
@@ -211,7 +240,7 @@ export default function Cart() {
                       >
                         <p className="text-xs text-foreground font-bold">{topping.name}</p>
                         <p className={`text-[10px] mt-1 font-medium ${isSelected ? 'text-primary' : 'text-muted-foreground'}`}>
-                          {isSelected ? '✓ Added to Box' : '+ Include'}
+                          {isSelected ? '✓ Selected' : 'Choose'}
                         </p>
                       </button>
                     )
@@ -219,7 +248,7 @@ export default function Cart() {
                 </div>
               </div>
 
-              {/* Festive Topper element selector block tray */}
+              {/* Topper Element Tray */}
               <div>
                 <h3 className="flex items-center gap-1.5 font-black text-xs uppercase tracking-wider text-muted-foreground mb-2">
                   <Award size={14} className="text-primary" /> Festive Topper Banner
@@ -252,7 +281,7 @@ export default function Cart() {
 
             </div>
 
-            {/* Logistics Pickers (Date & Time) */}
+            {/* Date & Time Logistics Pickers */}
             <div className="px-5 py-3 border-t border-border flex flex-col gap-3 bg-muted/30">
               <div className="grid grid-cols-2 gap-2">
                 <div>
@@ -287,7 +316,7 @@ export default function Cart() {
               </div>
             </div>
 
-            {/* Pricing Summary Block & Placement Button */}
+            {/* Pricing Summary Footer */}
             <div className="px-5 py-4 border-t border-border bg-card">
               <div className="flex items-center justify-between mb-3">
                 <span className="font-bold text-sm text-foreground">Total order amount</span>
