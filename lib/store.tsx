@@ -39,7 +39,8 @@ interface StoreState {
 const StoreContext = createContext<StoreState | null>(null)
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [bundleKey, setBundleKeyState] = useState<BundleKey>('classic-6')
+  // Point default initial state to a real key configuration string
+  const [bundleKey, setBundleKeyState] = useState<BundleKey>('custom-6')
   const [slots, setSlots] = useState<BoxSlot[]>([])
   const [hideNuts, setHideNuts] = useState(false)
   const [hideDairy, setHideDairy] = useState(false)
@@ -50,15 +51,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const bundle = BUNDLE_SIZES.find((b) => b.key === bundleKey)!
 
-  // ── HYBRID PRICING CALCULATOR MATRIX ──────────────────────────────────────
+  // ── FIX: PRICING LOGIC MATRIX SEPARATION ─────────────────────────────────
   let calculatedPrice = 0
 
-  if (bundle && 'price' in bundle && typeof bundle.price === 'number') {
-    calculatedPrice = bundle.price
-  } else {
+  if (bundleKey === 'topper-only') {
+    calculatedPrice = 0 // No base cost for the box
+  } else if (bundleKey.startsWith('classic-') || bundleKey.startsWith('magic-')) {
+    calculatedPrice = 'price' in bundle && typeof bundle.price === 'number' ? bundle.price : 0
+  } else if (bundleKey.startsWith('custom-')) {
     calculatedPrice = slots.reduce((total, slot) => total + slot.donut.price, 0)
   }
+  
 
+  // Inject chosen standalone decoration accessories cleanly to the total bounds
   const activeTopper = TOPPERS.find(t => t.id === selectedTopperId)
   if (activeTopper) {
     calculatedPrice += activeTopper.price
@@ -72,25 +77,33 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setSelectedTopperId('')
   }, [])
 
-  // ── UPDATED ADD DONUT RULE CHECK ──────────────────────────────────────────
   const addDonut = useCallback(
     (donut: Donut) => {
-      // 1. Check if the box configuration limits are hit
+      // 1. Structural ceiling boundary limit check
       if (slots.length >= bundle.slots) return
 
-      // 2. Enforce Classic Box restrictions
+      // 2. Clear out immediately if it's a dynamic custom combo box row (No category gate rules)
+      if (bundleKey.startsWith('custom-')) {
+        setSlots((prev) => [
+          ...prev,
+          { id: `${donut.id}-${Date.now()}-${Math.random()}`, donut }
+        ])
+        return
+      }
+
+      // 3. Enforce Classic Box restrictions
       if (bundleKey.startsWith('classic-') && donut.category !== 'classics') {
         alert("You selected a Doníssima Classic box. You can only fill it with Classic flavors!")
         return
       }
 
-      // 3. Enforce Magic Box restrictions
+      // 4. Enforce Magic Box restrictions
       if (bundleKey.startsWith('magic-') && donut.category !== 'magic') {
         alert("You selected a Doníssima Magic box. You can only fill it with Magic flavors!")
         return
       }
 
-      // 4. Safely append item if rules clear successfully
+      // 5. Fallback appender
       setSlots((prev) => [
         ...prev, 
         { id: `${donut.id}-${Date.now()}-${Math.random()}`, donut }
@@ -98,7 +111,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
     [bundle?.slots, bundleKey, slots.length],
   )
-  // ───────────────────────────────────────────────────────────────────────────
 
   const removeSlot = useCallback((id: string) => {
     setSlots((prev) => prev.filter((s) => s.id !== id))
@@ -134,7 +146,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setPickupTime,
         toggleTopping,
         setTopperId,
-        totalSlots: bundle?.slots || 24,
+        totalSlots: bundle?.slots || 12,
         bundlePrice: calculatedPrice,
       }}
     >

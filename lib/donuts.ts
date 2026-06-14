@@ -162,19 +162,35 @@ export const CATEGORIES = [
 ] as const
 
 export const BUNDLE_SIZES = [
-  // ── Doníssima Classic Tiers ──
+
+  // ── Doníssima Custom Combo Tiers (Dynamic Accumulative Price) ──
+  { key: 'custom-6', label: 'Combo Box (6 Minis)', slots: 6 },
+  { key: 'custom-12', label: 'Combo Box (12 Minis)', slots: 12 },
+  { key: 'custom-24', label: 'Combo Box (24 Minis)', slots: 24 },
+  { key: 'custom-48', label: 'Combo Tower (48 Minis)', slots: 48 },
+  { key: 'custom-60', label: 'Combo Tower (60 Minis)', slots: 60 },
+
+  // ── Doníssima Classic Tiers (Flat Rate) ──
   { key: 'classic-6', label: 'Classic Box (6 Minis)', slots: 6, price: 2.50 },
   { key: 'classic-12', label: 'Classic Box (12 Minis)', slots: 12, price: 5.00 },
   { key: 'classic-24', label: 'Classic Box (24 Minis)', slots: 24, price: 10.00 },
   { key: 'classic-48', label: 'Classic Tower (48 Minis)', slots: 48, price: 20.00 },
   { key: 'classic-60', label: 'Classic Tower (60 Minis)', slots: 60, price: 30.00 },
   
-  // ── Doníssima Magic Tiers ──
+  // ── Doníssima Magic Tiers (Flat Rate) ──
   { key: 'magic-6', label: 'Magic Box (6 Minis)', slots: 6, price: 3.75 },
   { key: 'magic-12', label: 'Magic Box (12 Minis)', slots: 12, price: 7.50 },
   { key: 'magic-24', label: 'Magic Box (24 Minis)', slots: 24, price: 15.00 },
   { key: 'magic-48', label: 'Magic Tower (48 Minis)', slots: 48, price: 30.00 },
-  { key: 'magic-60', label: 'Magic Tower (60 Minis)', slots: 60, price: 45.00 }
+  { key: 'magic-60', label: 'Magic Tower (60 Minis)', slots: 60, price: 45.00 },
+
+  {
+    key: 'topper-only',
+    label: 'Specialty Design / Topper Only',
+    slots: 0,
+    price: 0 // Base price is 0, total will just be the topper price
+  }
+
 ] as const
 
 export type BundleKey = typeof BUNDLE_SIZES[number]['key']

@@ -16,7 +16,8 @@ function gridCols(n: number) {
 export default function BundleBuilder() {
   const { bundleKey, setBundleKey, slots, removeSlot, totalSlots, bundlePrice } = useStore()
 
-  // Filter bundle categories directly from active menu structure keys
+  // Split bundle array rows clearly into three logical tiers
+  const customBoxes = BUNDLE_SIZES.filter(b => b.key.startsWith('custom-'))
   const classicTowers = BUNDLE_SIZES.filter(b => b.key.startsWith('classic-'))
   const magicTowers = BUNDLE_SIZES.filter(b => b.key.startsWith('magic-'))
 
@@ -71,8 +72,9 @@ export default function BundleBuilder() {
           </p>
         </div>
 
-        {/* Dynamic Structural Grid Rows Layout */}
+        {/* Dynamic Structural Grid Rows Layout including Custom Combos */}
         <div className="bg-muted/30 border-2 border-border/70 rounded-3xl p-5 md:p-6 flex flex-col gap-5 mb-12 shadow-sm">
+          {renderRow("Custom Combos (Mix Anything)", customBoxes)}
           {renderRow("Doníssima Classic", classicTowers)}
           {renderRow("Doníssima Magic", magicTowers)}
         </div>

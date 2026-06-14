@@ -12,7 +12,7 @@ function getSprinklesCost(donutCount: number): number {
   if (donutCount <= 12)  return 1.00 
   if (donutCount <= 24)  return 2.00 
   if (donutCount <= 48)  return 3.50 
-  return 4.50                        
+  return 4.50                                 
 }
 
 export default function Cart() {
@@ -34,6 +34,9 @@ export default function Cart() {
 
   const [pickupDate, setPickupDate] = useState<string>('')
   const bundle = BUNDLE_SIZES.find((b) => b.key === bundleKey)!
+  
+  // Flag indicating if the customer wants a specialty topper only
+  const isTopperOnly = bundleKey === 'topper-only'
 
   // Group slots by donut flavor selection
   const grouped = slots.reduce<Record<string, { name: string; count: number; id: string; price: number }>>((acc, s) => {
@@ -44,6 +47,13 @@ export default function Cart() {
     }
     return acc
   }, {})
+
+  // DETECT SPECIALTY STRUCTURES (e.g., Towers, Bouquets)
+  // If the cart contains a Tower, it acts as a standalone structural order.
+  const hasSpecialtyItem = Object.values(grouped).some(
+    item => item.name.toLowerCase().includes('tower') || item.name.toLowerCase().includes('bouquet')
+  )
+  const isSpecialtyStructure = isTopperOnly || hasSpecialtyItem
 
   const getMinDateString = (): string => {
     const minDate = new Date()
@@ -61,15 +71,20 @@ export default function Cart() {
     return diffDays >= ORDER_POLICY.advanceDaysRequired
   }
 
-  // Calculate add-on costs dynamically
-  const dynamicSprinklePrice = selectedToppings.length > 0 ? getSprinklesCost(totalSlots) : 0
+  // Calculate add-on costs dynamically (Sprinkles don't apply to a standalone topper)
+  const dynamicSprinklePrice = !isTopperOnly && selectedToppings.length > 0 ? getSprinklesCost(totalSlots) : 0
   const activeTopper = TOPPERS.find(t => t.id === selectedTopperId)
   const topperPrice = activeTopper ? activeTopper.price : 0
   
-  // Combined Grand Total
-  const finalCalculatedTotal = bundlePrice + dynamicSprinklePrice + topperPrice
+  // ── GRAND TOTAL ──────────────────────────────────────────────────────────
+  const finalCalculatedTotal = bundlePrice + dynamicSprinklePrice
+  // ───────────────────────────────────────────────────────────────────────────
 
-  const canCheckout = slots.length === totalSlots && pickupTime !== '' && isDateValid()
+  // Validation updates: If it's a specialty structure, we don't need slots to equal totalSlots
+  const canCheckout = 
+    (isSpecialtyStructure ? slots.length > 0 || isTopperOnly : slots.length === totalSlots) && 
+    pickupTime !== '' && 
+    isDateValid()
 
   // Enforces Mutually Exclusive Topping Rule
   const handleToppingSelection = (toppingId: string) => {
@@ -107,15 +122,20 @@ export default function Cart() {
 
     const activeTopperName = activeTopper ? activeTopper.name : 'None Included'
 
+    // Formatted dynamic text message blocks based on order type
+    const productBreakdown = isTopperOnly
+      ? `*Specialty Design Purchase:*%0A- *Topper Plate:* ${activeTopperName}%0A`
+      : `*Box Type:* ${bundle.label}%0A%0A` +
+        `*Selected Items:*%0A${itemsList}%0A%0A` +
+        `*Box Add-ons:*%0A` +
+        `- *Toppings (Sprinkles):* ${activeToppingsNames} (${dynamicSprinklePrice > 0 ? `+$${dynamicSprinklePrice.toFixed(2)}` : 'Included/None'})%0A` +
+        `- *Topper Plate:* ${activeTopperName} (${topperPrice > 0 ? `+$${topperPrice.toFixed(2)}` : 'None'})%0A`
+
     const messageText = 
       `*NEW DONUT ORDER*%0A%0A` +
-      `*Box Type:* ${bundle.label} (${totalSlots} Units)%0A` +
+      productBreakdown + `%0A` +
       `*Pickup Date:* ${pickupDate}%0A` +
       `*Pickup Time:* ${pickupTime}%0A%0A` +
-      `*Selected Flavors:*%0A${itemsList}%0A%0A` +
-      `*Box Add-ons:*%0A` +
-      `- *Toppings (Sprinkles):* ${activeToppingsNames} (${dynamicSprinklePrice > 0 ? `+$${dynamicSprinklePrice.toFixed(2)}` : 'Included/None'})%0A` +
-      `- *Topper Plate:* ${activeTopperName} (${topperPrice > 0 ? `+$${topperPrice.toFixed(2)}` : 'None'})%0A%0A` +
       `*Total Amount:* $${finalCalculatedTotal.toFixed(2)}%0A%0A` +
       `*Notice:* I understand that a 50% down payment is required to confirm.%0A%0A` +
       `Please let me know if my order is confirmed! Thank you!`
@@ -158,14 +178,16 @@ export default function Cart() {
             {/* Progress Bar Info */}
             <div className="px-5 py-3 bg-secondary/50 border-b border-border">
               <p className="font-bold text-secondary-foreground text-sm">
-                {bundle.label} — {slots.length}/{totalSlots} selected
+                {isSpecialtyStructure ? 'Specialty Design Order' : `${bundle.label} — ${slots.length}/${totalSlots} selected`}
               </p>
-              <div className="h-2 bg-border rounded-full mt-2 overflow-hidden">
-                <motion.div
-                  className="h-full bg-primary rounded-full"
-                  animate={{ width: `${(slots.length / totalSlots) * 100}%` }}
-                />
-              </div>
+              {!isSpecialtyStructure && (
+                <div className="h-2 bg-border rounded-full mt-2 overflow-hidden">
+                  <motion.div
+                    className="h-full bg-primary rounded-full"
+                    animate={{ width: `${(slots.length / totalSlots) * 100}%` }}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Advance Notice Alert */}
@@ -206,7 +228,7 @@ export default function Cart() {
                 )}
               </div>
 
-              {/* ── TOPPING SELECTION TRAY WITH REMOVE ACTION ── */}
+              {/* TOPPING SELECTION TRAY */}
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="flex items-center gap-1.5 font-black text-xs uppercase tracking-wider text-muted-foreground">
@@ -333,7 +355,7 @@ export default function Cart() {
                     : 'bg-muted text-muted-foreground cursor-not-allowed'
                 }`}
               >
-                {slots.length < totalSlots
+                {slots.length < totalSlots && !isSpecialtyStructure
                   ? `Add ${totalSlots - slots.length} more donut${totalSlots - slots.length !== 1 ? 's' : ''}`
                   : !pickupDate
                   ? 'Choose a pickup date'
