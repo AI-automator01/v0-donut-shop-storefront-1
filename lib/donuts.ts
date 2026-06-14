@@ -150,7 +150,7 @@ export const CATEGORIES = [
 export const BUNDLE_SIZES = [
   { key: 'small', label: 'Small Box', slots: 6 },
   { key: 'party', label: 'Party Box', slots: 12 },
-  { key: 'mega', label: 'Mega Box', slots: 24 },
+  { key: 'mega1', label: 'Mega Box', slots: 24 },
   
   // Custom Production Matrices (Handwritten Specs)
   { key: 'classic-24', label: 'Doníssima Classic (24 Minis)', slots: 24, price: 10.00 }, //

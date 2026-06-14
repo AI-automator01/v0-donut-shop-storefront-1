@@ -7,7 +7,7 @@ import {
   useCallback,
   type ReactNode,
 } from 'react'
-import { BUNDLE_SIZES, type BundleKey, type Donut } from './donuts'
+import { BUNDLE_SIZES, TOPPERS, type BundleKey, type Donut } from './donuts'
 
 export interface BoxSlot {
   id: string       // unique per slot instance
@@ -21,6 +21,8 @@ interface StoreState {
   hideDairy: boolean
   cartOpen: boolean
   pickupTime: string
+  selectedToppings: string[] // Array of selected topping IDs
+  selectedTopperId: string   // ID of selected premium topper
   setBundleKey: (k: BundleKey) => void
   addDonut: (donut: Donut) => void
   removeSlot: (id: string) => void
@@ -28,6 +30,8 @@ interface StoreState {
   setHideDairy: (v: boolean) => void
   setCartOpen: (v: boolean) => void
   setPickupTime: (t: string) => void
+  toggleTopping: (id: string) => void
+  setTopperId: (id: string) => void
   totalSlots: number
   bundlePrice: number
 }
@@ -41,22 +45,36 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [hideDairy, setHideDairy] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
   const [pickupTime, setPickupTime] = useState('')
+  
+  // Custom Customization Add-On States
+  const [selectedToppings, setSelectedToppings] = useState<string[]>([])
+  const [selectedTopperId, setSelectedTopperId] = useState<string>('')
 
   const bundle = BUNDLE_SIZES.find((b) => b.key === bundleKey)!
 
-  // ── DYNAMIC PRICE CALCULATION ─────────────────────────────────────────────
-  // This loops through every item inside the box and totals up their prices
-  const dynamicBundlePrice = slots.reduce((total, slot) => total + slot.donut.price, 0)
+  // ── DYNAMIC SYSTEM PRICE CALCULATION ──────────────────────────────────────
+  let calculatedPrice = 0
 
-  /* NOTE: If you still want a flat base price for the box container PLUS the 
-    donut costs, change the calculation to:
-    const dynamicBundlePrice = bundle.price + slots.reduce((total, slot) => total + slot.donut.price, 0)
-  */
+  if ('price' in bundle && typeof bundle.price === 'number') {
+    // For Doníssima Classic / Magic tiers, use the structural matrix flat pricing
+    calculatedPrice = bundle.price
+  } else {
+    // Fallback default calculation: total of each added element's native price value
+    calculatedPrice = slots.reduce((total, slot) => total + slot.donut.price, 0)
+  }
+
+  // Inject any premium topper selection price into the final box layout total
+  const activeTopper = TOPPERS.find(t => t.id === selectedTopperId)
+  if (activeTopper) {
+    calculatedPrice += activeTopper.price
+  }
   // ───────────────────────────────────────────────────────────────────────────
 
   const setBundleKey = useCallback((k: BundleKey) => {
     setBundleKeyState(k)
     setSlots([])
+    setSelectedToppings([]) // Reset customizations when size swaps
+    setSelectedTopperId('')
   }, [])
 
   const addDonut = useCallback(
@@ -73,6 +91,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setSlots((prev) => prev.filter((s) => s.id !== id))
   }, [])
 
+  const toggleTopping = useCallback((id: string) => {
+    setSelectedToppings((prev) =>
+      prev.includes(id) ? prev.filter((tId) => tId !== id) : [...prev, id]
+    )
+  }, [])
+
+  const setTopperId = useCallback((id: string) => {
+    setSelectedTopperId((prev) => (prev === id ? '' : id)) // Click again to remove toggle
+  }, [])
+
   return (
     <StoreContext.Provider
       value={{
@@ -82,6 +110,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         hideDairy,
         cartOpen,
         pickupTime,
+        selectedToppings,
+        selectedTopperId,
         setBundleKey,
         addDonut,
         removeSlot,
@@ -89,8 +119,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setHideDairy,
         setCartOpen,
         setPickupTime,
+        toggleTopping,
+        setTopperId,
         totalSlots: bundle.slots,
-        bundlePrice: dynamicBundlePrice, // <-- Updated to pass the dynamic calculation
+        bundlePrice: calculatedPrice,
       }}
     >
       {children}

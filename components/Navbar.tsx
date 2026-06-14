@@ -13,7 +13,7 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           <span className="text-2xl" aria-hidden="true">🍩</span>
           <span className="font-black text-xl text-primary tracking-tight">
-            Donitas De Marien
+            Doníssima 
           </span>
         </div>
 
