@@ -6,7 +6,7 @@ export interface Donut {
   category: 'classics' | 'magic' | 'alternative_formats' | 'specialty' 
   description: string
   price: number
-  color: string        // tailwind bg class for the icon
+  color: string      // tailwind bg class for the icon
   ringColor: string    // tailwind ring / border class
   allergens: Allergen[]
   emoji: string
@@ -36,8 +36,6 @@ export const DONUTS: Donut[] = [
     allergens: ['dairy'],
     emoji: '🥛',
   },
-  
-  
 
   // ── Magic / Premium Glazes (Per Unit Pricing) ──
   {
@@ -112,36 +110,36 @@ export const DONUTS: Donut[] = [
   // ── Specialty ──
   {
     id: 'birthday',
-    name: 'Birthday',
+    name: 'Birthday Tower',
     category: 'specialty',
     description: 'Mini doughnuts stacked like a sweet work of art.',
     price: 200.0,
     color: 'bg-indigo-400',
     ringColor: 'ring-indigo-500',
     allergens: ['dairy'],
-    emoji: '🌌',
+    emoji: '🏰',
   },
   {
     id: 'wedding',
-    name: 'Wedding',
+    name: 'Wedding Tower',
     category: 'specialty',
     description: 'Mini doughnuts stacked like a sweet work of art.',
     price: 200.0,
     color: 'bg-indigo-400',
     ringColor: 'ring-indigo-500',
     allergens: ['dairy'],
-    emoji: '🌌',
+    emoji: '🏰',
   },
   {
     id: 'graduation',
-    name: 'Graduation',
+    name: 'Graduation Tower',
     category: 'specialty',
     description: 'Mini doughnuts stacked like a sweet work of art.',
     price: 200.0,
     color: 'bg-indigo-400',
     ringColor: 'ring-indigo-500',
     allergens: ['dairy'],
-    emoji: '🌌',
+    emoji: '🏰',
   },
 ]
 
@@ -150,7 +148,6 @@ export const TOPPINGS = [
   { id: 'sprinkles-chocolate', name: 'Chocolate Sprinkles' }
 ]
 
-// FIXED NAME FROM TOPTERS -> TOPPERS
 export const TOPPERS = [
   { id: 'topper-simple', name: 'Simple Topper', price: 1.50 },
   { id: 'topper-custom', name: 'Custom Topper', price: 3.00 },
@@ -165,21 +162,19 @@ export const CATEGORIES = [
 ] as const
 
 export const BUNDLE_SIZES = [
-  { key: 'small', label: 'Small Box', slots: 6 },
-  { key: 'party', label: 'Party Box', slots: 12 },
-  { key: 'mega1', label: 'Mega Box', slots: 24 },
+  // ── Doníssima Classic Tiers ──
+  { key: 'classic-6', label: 'Classic Box (6 Minis)', slots: 6, price: 2.50 },
+  { key: 'classic-12', label: 'Classic Box (12 Minis)', slots: 12, price: 5.00 },
+  { key: 'classic-24', label: 'Classic Box (24 Minis)', slots: 24, price: 10.00 },
+  { key: 'classic-48', label: 'Classic Tower (48 Minis)', slots: 48, price: 20.00 },
+  { key: 'classic-60', label: 'Classic Tower (60 Minis)', slots: 60, price: 30.00 },
   
-  { key: 'classic-6', label: 'Doníssima Classic (6 Minis)', slots: 6, price: 2.50 },
-  { key: 'classic-12', label: 'Doníssima Classic (12 Minis)', slots: 12, price: 5.00 },
-  { key: 'classic-24', label: 'Doníssima Classic (24 Minis)', slots: 24, price: 10.00 },
-  { key: 'classic-48', label: 'Doníssima Classic Tower (48 Minis)', slots: 48, price: 20.00 },
-  { key: 'classic-60', label: 'Doníssima Classic Tower (60 Minis)', slots: 60, price: 30.00 },
-  
-  { key: 'magic-6', label: 'Doníssima Magic (6 Minis)', slots: 6, price: 3.75 },
-  { key: 'magic-12', label: 'Doníssima Magic (12 Minis)', slots: 12, price: 7.50 },
-  { key: 'magic-24', label: 'Doníssima Magic (24 Minis)', slots: 24, price: 15.00 },
-  { key: 'magic-48', label: 'Doníssima Magic Tower (48 Minis)', slots: 48, price: 30.00 },
-  { key: 'magic-60', label: 'Doníssima Magic Tower (60 Minis)', slots: 60, price: 45.00 }
+  // ── Doníssima Magic Tiers ──
+  { key: 'magic-6', label: 'Magic Box (6 Minis)', slots: 6, price: 3.75 },
+  { key: 'magic-12', label: 'Magic Box (12 Minis)', slots: 12, price: 7.50 },
+  { key: 'magic-24', label: 'Magic Box (24 Minis)', slots: 24, price: 15.00 },
+  { key: 'magic-48', label: 'Magic Tower (48 Minis)', slots: 48, price: 30.00 },
+  { key: 'magic-60', label: 'Magic Tower (60 Minis)', slots: 60, price: 45.00 }
 ] as const
 
 export type BundleKey = typeof BUNDLE_SIZES[number]['key']
@@ -194,5 +189,5 @@ export const PICKUP_TIMES = [
 export const ORDER_POLICY = {
   advanceDaysRequired: 3,
   downPaymentPercentage: 50,
-  noticeText: 'Orders must be placed with at least 3 days advance notice. A 50% down payment is required to confirm your order slot.'
+  noticeText: 'NOTE: Custom orders require a 50% down payment and 3 days advance notice.'
 }

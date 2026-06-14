@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
+import Image from 'next/image'
 import { useStore } from '@/lib/store'
 import { BUNDLE_SIZES } from '@/lib/donuts'
 import { cn } from '@/lib/utils'
@@ -15,7 +16,7 @@ function gridCols(n: number) {
 export default function BundleBuilder() {
   const { bundleKey, setBundleKey, slots, removeSlot, totalSlots, bundlePrice } = useStore()
 
-  const standardBoxes = BUNDLE_SIZES.filter(b => ['small', 'party', 'mega1'].includes(b.key))
+  // Filter bundle categories directly from active menu structure keys
   const classicTowers = BUNDLE_SIZES.filter(b => b.key.startsWith('classic-'))
   const magicTowers = BUNDLE_SIZES.filter(b => b.key.startsWith('magic-'))
 
@@ -28,7 +29,7 @@ export default function BundleBuilder() {
         <div className="flex flex-wrap gap-2.5 flex-1">
           {bundles.map((b) => {
             const isSelected = bundleKey === b.key
-            const displayLabel = b.key === 'small' ? 'Small Box' : b.key === 'party' ? 'Party Box' : b.key === 'mega1' ? 'Mega Box' : b.label.includes('Tower') ? `${b.slots} Minis Tower` : `${b.slots} Minis Box`
+            const displayLabel = b.label.includes('Tower') ? `${b.slots} Minis Tower` : `${b.slots} Minis Box`
             
             return (
               <motion.button
@@ -72,7 +73,6 @@ export default function BundleBuilder() {
 
         {/* Dynamic Structural Grid Rows Layout */}
         <div className="bg-muted/30 border-2 border-border/70 rounded-3xl p-5 md:p-6 flex flex-col gap-5 mb-12 shadow-sm">
-          {renderRow("Standard Boxes", standardBoxes)}
           {renderRow("Doníssima Classic", classicTowers)}
           {renderRow("Doníssima Magic", magicTowers)}
         </div>
@@ -109,15 +109,20 @@ export default function BundleBuilder() {
                         aria-label={`Remove ${slot.donut.name}`}
                         className="absolute inset-0 w-full h-full group text-left focus:outline-none"
                       >
-                        {/* Render background color color ring and donut emoji layout view */}
+                        {/* Render background color ring overlay and image layout component */}
                         <div className={cn(
-                          'absolute inset-0 rounded-xl transition-transform duration-200 group-hover:scale-95 flex flex-col items-center justify-center shadow-inner border border-black/5',
+                          'absolute inset-0 rounded-xl transition-transform duration-200 group-hover:scale-95 flex items-center justify-center overflow-hidden bg-card shadow-inner border border-black/5',
                           slot.donut.color
                         )}>
-                          {/* High-visibility centralized emoji placement matrix wrapper */}
-                          <span className="text-3xl md:text-4xl drop-shadow-sm select-none transform transition-transform group-hover:scale-110">
-                            {slot.donut.emoji}
-                          </span>
+                          {/* Next.js High-Performance Image Optimization Module */}
+                          <Image
+                            src={`/donuts/${slot.donut.id}.jpg`}
+                            alt={slot.donut.name}
+                            fill
+                            sizes="(max-width: 640px) 33vw, (max-width: 1024px) 16vw, 10vw"
+                            className="object-cover transition-transform duration-200 group-hover:scale-110 select-none"
+                            priority
+                          />
                         </div>
 
                         {/* Always visible Close/Delete Badge in top right corner */}
