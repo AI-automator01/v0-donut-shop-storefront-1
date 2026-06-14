@@ -36,6 +36,8 @@ export const DONUTS: Donut[] = [
     allergens: ['dairy'],
     emoji: '🥛',
   },
+  
+  
 
   // ── Magic / Premium Glazes (Per Unit Pricing) ──
   {

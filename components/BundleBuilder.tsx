@@ -97,7 +97,7 @@ export default function BundleBuilder() {
                   key={i}
                   className="aspect-square rounded-xl border-2 border-dashed border-border bg-muted/50 flex items-center justify-center overflow-hidden relative"
                 >
-                  <AnimatePresence>
+                  <AnimatePresence mode="wait">
                     {slot ? (
                       <motion.button
                         key={slot.id}
@@ -109,20 +109,31 @@ export default function BundleBuilder() {
                         aria-label={`Remove ${slot.donut.name}`}
                         className="absolute inset-0 w-full h-full group text-left focus:outline-none"
                       >
-                        <div className={cn('absolute inset-0 rounded-xl transition-transform duration-200 group-hover:scale-95 flex items-center justify-center text-xl shadow-inner', slot.donut.color)}>
-                          {slot.donut.emoji}
+                        {/* Render background color color ring and donut emoji layout view */}
+                        <div className={cn(
+                          'absolute inset-0 rounded-xl transition-transform duration-200 group-hover:scale-95 flex flex-col items-center justify-center shadow-inner border border-black/5',
+                          slot.donut.color
+                        )}>
+                          {/* High-visibility centralized emoji placement matrix wrapper */}
+                          <span className="text-3xl md:text-4xl drop-shadow-sm select-none transform transition-transform group-hover:scale-110">
+                            {slot.donut.emoji}
+                          </span>
                         </div>
+
+                        {/* Always visible Close/Delete Badge in top right corner */}
                         <div className="absolute top-1.5 right-1.5 bg-destructive text-destructive-foreground rounded-full p-1 shadow-md transition-transform group-hover:scale-110 z-10">
                           <X size={12} className="stroke-[3]" />
                         </div>
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity flex items-center justify-center rounded-xl z-10">
-                          <span className="text-white font-black text-xs tracking-wider uppercase bg-destructive/90 px-2 py-1 rounded-md">
+
+                        {/* Quick Hover/Focus Overlay text */}
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity flex items-center justify-center rounded-xl z-10">
+                          <span className="text-white font-black text-[10px] tracking-wider uppercase bg-destructive/95 px-2 py-1 rounded-md shadow-sm">
                             Remove
                           </span>
                         </div>
                       </motion.button>
                     ) : (
-                      <span className="text-muted-foreground/30 text-2xl select-none" aria-hidden="true">+</span>
+                      <span className="text-muted-foreground/30 text-2xl font-bold select-none" aria-hidden="true">+</span>
                     )}
                   </AnimatePresence>
                 </div>
