@@ -1,11 +1,20 @@
+
 'use client'
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Image from 'next/image'
 import { X, Clock, Calendar, AlertTriangle, Sparkles, Award } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { PICKUP_TIMES, BUNDLE_SIZES, ORDER_POLICY, TOPPINGS, TOPPERS } from '@/lib/donuts'
+
+// Hard-coded sprinkles pricing tier matching the box sizes
+function getSprinklesCost(donutCount: number): number {
+  if (donutCount <= 6)   return 0.50 // Small Box topping add-on
+  if (donutCount <= 12)  return 1.00 // Party Box topping add-on
+  if (donutCount <= 24)  return 2.00 // Mega / 24 Minis Box topping add-on
+  if (donutCount <= 48)  return 3.50 // 48 Minis Tower topping add-on
+  return 4.50                        // 60 Minis Tower or larger topping add-on
+}
 
 export default function Cart() {
   const {
@@ -53,9 +62,16 @@ export default function Cart() {
     return diffDays >= ORDER_POLICY.advanceDaysRequired
   }
 
+  // Calculate add-on costs dynamically
+  const dynamicSprinklePrice = selectedToppings.length > 0 ? getSprinklesCost(totalSlots) : 0
+  const activeTopper = TOPPERS.find(t => t.id === selectedTopperId)
+  const topperPrice = activeTopper ? activeTopper.price : 0
+  
+  // Total Accumulator combining base package price with extra selections
+  const finalCalculatedTotal = bundlePrice + dynamicSprinklePrice + topperPrice
+
   const canCheckout = slots.length === totalSlots && pickupTime !== '' && isDateValid()
 
-  // ── WHATSAPP REDIRECT ROUTER WITH SPRINKLES PROCESSING ────────────────────
   const handleWhatsAppCheckout = () => {
     if (!canCheckout) return
 
@@ -65,24 +81,22 @@ export default function Cart() {
       .map((item) => `- ${item.name} (x${item.count})`)
       .join('%0A')
 
-    // Parse chosen sprinkle IDs back into localized display titles
     const activeToppingsNames = selectedToppings.length > 0 
       ? selectedToppings.map(id => TOPPINGS.find(t => t.id === id)?.name).filter(Boolean).join(', ')
       : 'None'
 
-    const activeTopperName = TOPPERS.find(t => t.id === selectedTopperId)?.name || 'None Included'
+    const activeTopperName = activeTopper ? activeTopper.name : 'None Included'
 
-    // Formatted strictly with %0A url break encoding strings to prevent diamond block layout errors
     const messageText = 
       `*NEW DONUT ORDER*%0A%0A` +
-      `*Box Type:* ${bundle.label}%0A` +
+      `*Box Type:* ${bundle.label} (${totalSlots} Units)%0A` +
       `*Pickup Date:* ${pickupDate}%0A` +
       `*Pickup Time:* ${pickupTime}%0A%0A` +
       `*Selected Flavors:*%0A${itemsList}%0A%0A` +
       `*Box Add-ons:*%0A` +
-      `- *Toppings (Sprinkles):* ${activeToppingsNames}%0A` +
-      `- *Topper Plate:* ${activeTopperName}%0A%0A` +
-      `*Total Amount:* $${bundlePrice.toFixed(2)}%0A%0A` +
+      `- *Toppings (Sprinkles):* ${activeToppingsNames} (${dynamicSprinklePrice > 0 ? `+$${dynamicSprinklePrice.toFixed(2)}` : 'Included/None'})%0A` +
+      `- *Topper Plate:* ${activeTopperName} (${topperPrice > 0 ? `+$${topperPrice.toFixed(2)}` : 'None'})%0A%0A` +
+      `*Total Amount:* $${finalCalculatedTotal.toFixed(2)}%0A%0A` +
       `*Notice:* I understand that a 50% down payment is required to confirm.%0A%0A` +
       `Please let me know if my order is confirmed! Thank you!`
 
@@ -134,7 +148,7 @@ export default function Cart() {
               </div>
             </div>
 
-            {/* Policy Context Alert Notice Banner block */}
+            {/* Policy Alert Notice Banner */}
             <div className="mx-5 mt-4 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-xl flex gap-2 items-start">
               <AlertTriangle size={16} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
               <p className="text-amber-800 dark:text-amber-300 font-medium text-xs leading-tight">
@@ -154,7 +168,9 @@ export default function Cart() {
                   <div className="flex flex-col gap-2">
                     {Object.values(grouped).map((item) => (
                       <div key={item.id} className="flex items-center justify-between bg-muted/40 p-2 rounded-xl text-xs">
-                        <span className="font-bold text-foreground">{item.name} <span className="text-primary font-black">×{item.count}</span></span>
+                        <span className="font-bold text-foreground">
+                          {item.name} <span className="text-primary font-black">×{item.count}</span>
+                        </span>
                         <button
                           onClick={() => {
                             const slot = slots.findLast((s) => s.donut.id === item.id)
@@ -172,9 +188,14 @@ export default function Cart() {
 
               {/* ── VISUAL SPRINKLES ADD-ON SELECTOR ELEMENT TRAY ── */}
               <div>
-                <h3 className="flex items-center gap-1.5 font-black text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                  <Sparkles size={14} className="text-primary" /> Select Box Toppings
-                </h3>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="flex items-center gap-1.5 font-black text-xs uppercase tracking-wider text-muted-foreground">
+                    <Sparkles size={14} className="text-primary" /> Select Box Toppings
+                  </h3>
+                  <span className="text-[10px] font-black text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+                    +${getSprinklesCost(totalSlots).toFixed(2)} total
+                  </span>
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   {TOPPINGS.map((topping) => {
                     const isSelected = selectedToppings.includes(topping.id)
@@ -270,7 +291,7 @@ export default function Cart() {
             <div className="px-5 py-4 border-t border-border bg-card">
               <div className="flex items-center justify-between mb-3">
                 <span className="font-bold text-sm text-foreground">Total order amount</span>
-                <span className="font-black text-primary text-xl">${bundlePrice.toFixed(2)}</span>
+                <span className="font-black text-primary text-xl">${finalCalculatedTotal.toFixed(2)}</span>
               </div>
               <motion.button
                 whileTap={canCheckout ? { scale: 0.96 } : {}}
